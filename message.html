@@ -771,10 +771,21 @@ function initScene3() {
           if (prev) { prev.focus(); prev.value=''; }
         }
       });
-      inp.addEventListener('input', () => {
+      let composing = false;
+      inp.addEventListener('compositionstart', () => { composing = true; });
+      inp.addEventListener('compositionend',   () => {
+        composing = false;
         const v = [...inp.value];
         if (!v.length) return;
-        inp.value = v[v.length-1]; // last char (handles IME)
+        inp.value = v[v.length-1];
+        if (ci === chars.length-1) checkAnswer(qIdx);
+        else getBoxInput(qIdx, ci+1)?.focus();
+      });
+      inp.addEventListener('input', () => {
+        if (composing) return;
+        const v = [...inp.value];
+        if (!v.length) return;
+        inp.value = v[v.length-1];
         if (ci === chars.length-1) checkAnswer(qIdx);
         else getBoxInput(qIdx, ci+1)?.focus();
       });
