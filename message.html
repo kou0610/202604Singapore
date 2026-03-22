@@ -102,38 +102,37 @@ canvas {
   color:rgba(255,255,255,0.82); margin-bottom:14px;
 }
 .q-boxes { display:flex; flex-wrap:wrap; gap:5px; }
-.q-box { position:relative; }
-.q-box input {
+.q-box {
+  position:relative;
   width:34px; height:40px;
   background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.18);
   border-radius:7px;
-  color:#fff;
-  font-family:'Hiragino Sans','Noto Sans JP',sans-serif;
-  font-size:18px; font-weight:400;
-  text-align:center;
-  outline:none; caret-color:transparent;
-  -webkit-appearance:none; appearance:none;
+  display:flex; align-items:center; justify-content:center;
   transition:border-color 0.2s, background 0.2s;
-  display:block;
+  cursor:text;
 }
-.q-box input:focus {
+.q-box.active-box {
   border-color:#c8a96e;
   background:rgba(200,169,110,0.1);
 }
-.q-box.key-box input { border-color:rgba(200,169,110,0.45); }
+.q-box.key-box { border-color:rgba(200,169,110,0.45); }
+.q-char {
+  font-family:'Hiragino Sans','Noto Sans JP',sans-serif;
+  font-size:18px; font-weight:400;
+  color:#fff;
+}
 .q-box .key-num {
   position:absolute; top:2px; left:3px;
   font-family:'Barlow Condensed',sans-serif;
   font-size:8px; font-weight:700; color:#c8a96e;
   pointer-events:none; line-height:1; z-index:1;
 }
-.q-card.solved .q-box input {
+.q-card.solved .q-box {
   background:rgba(200,169,110,0.1);
   border-color:rgba(200,169,110,0.38);
-  color:#c8a96e;
-  pointer-events:none;
 }
+.q-card.solved .q-char { color:#c8a96e; }
 @keyframes shake {
   0%,100%{transform:translateX(0)}
   15%{transform:translateX(-7px)} 30%{transform:translateX(7px)}
@@ -203,7 +202,7 @@ canvas {
   </div>
   <div class="q-card" id="qcard-1">
     <div class="q-num">Q · 02</div>
-    <div class="q-text">2025年8月に初めて訪れ、次回の予約を取ったら「また来年！」と言われたお店は？</div>
+    <div class="q-text">はなちゃんがうちに持ってきてくれた食べ物は？</div>
     <div class="q-boxes" id="qboxes-1"></div>
   </div>
   <div class="q-card" id="qcard-2">
@@ -674,7 +673,7 @@ function easeInOutCubic(t)  { return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
 ============================================================ */
 const ANSWERS = [
   'にこらいばーぐまん', // Q1 (9)
-  'ぺきんだっくまにあ', // Q2 (9)
+  'ぺきんだっく', // Q2 (6)
   'ぴのぽむ',           // Q3 (4)
   'ゆかだんぼう',       // Q4 (6)
   'ないとうけいすけ',   // Q5 (8)
@@ -743,7 +742,9 @@ function initScene3() {
   scene3Initialized = true;
 
   ANSWERS.forEach((answer, qIdx) => {
+    cursors[qIdx] = 0;
     const container = document.getElementById(`qboxes-${qIdx}`);
+    const card = document.getElementById(`qcard-${qIdx}`);
     const chars = [...answer];
     const keyPos = KEY_MAP
       .filter(k => k[0]===qIdx)
@@ -758,56 +759,88 @@ function initScene3() {
         num.textContent = keyPos[ci];
         box.appendChild(num);
       }
-      const inp = document.createElement('input');
-      inp.type='text'; inp.maxLength=2;
-      inp.autocomplete='off'; inp.autocorrect='off';
-      inp.autocapitalize='none'; inp.spellcheck=false;
-      inp.setAttribute('inputmode','text');
-
-      inp.addEventListener('keydown', e => {
-        if (e.key==='Backspace' && inp.value==='') {
-          e.preventDefault();
-          const prev = getBoxInput(qIdx, ci-1);
-          if (prev) { prev.focus(); prev.value=''; }
-        }
-      });
-      let composing = false;
-      inp.addEventListener('compositionstart', () => { composing = true; });
-      inp.addEventListener('compositionend',   () => {
-        composing = false;
-        const v = [...inp.value];
-        if (!v.length) return;
-        inp.value = v[v.length-1];
-        if (ci === chars.length-1) checkAnswer(qIdx);
-        else getBoxInput(qIdx, ci+1)?.focus();
-      });
-      inp.addEventListener('input', () => {
-        if (composing) return;
-        const v = [...inp.value];
-        if (!v.length) return;
-        inp.value = v[v.length-1];
-        if (ci === chars.length-1) checkAnswer(qIdx);
-        else getBoxInput(qIdx, ci+1)?.focus();
-      });
-
-      box.appendChild(inp);
+      const charSpan = document.createElement('span');
+      charSpan.className = 'q-char';
+      box.appendChild(charSpan);
       container.appendChild(box);
     });
+
+    // 各問に1つの隠しinput
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.id = `q-inp-${qIdx}`;
+    inp.autocomplete = 'off'; inp.autocorrect = 'off';
+    inp.autocapitalize = 'none'; inp.spellcheck = false;
+    inp.setAttribute('inputmode', 'hiragana');
+    inp.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;border:none;outline:none;';
+    document.body.appendChild(inp);
+
+    card.addEventListener('click', () => inp.focus());
+
+    let composing = false;
+
+    function processChars(text) {
+      for (const ch of [...text]) {
+        if (cursors[qIdx] >= chars.length) break;
+        const span = getCharSpan(qIdx, cursors[qIdx]);
+        if (span) span.textContent = ch;
+        cursors[qIdx]++;
+      }
+      updateCursor(qIdx);
+      if (cursors[qIdx] >= chars.length) checkAnswer(qIdx);
+    }
+
+    inp.addEventListener('compositionstart', () => { composing = true; });
+    inp.addEventListener('compositionend', () => {
+      composing = false;
+      const text = inp.value;
+      inp.value = '';
+      if (text) processChars(text);
+    });
+    inp.addEventListener('input', () => {
+      if (composing) return;
+      const text = inp.value;
+      inp.value = '';
+      if (text) processChars(text);
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !composing && cursors[qIdx] > 0) {
+        cursors[qIdx]--;
+        const span = getCharSpan(qIdx, cursors[qIdx]);
+        if (span) span.textContent = '';
+        updateCursor(qIdx);
+      }
+    });
+    inp.addEventListener('focus', () => updateCursor(qIdx));
+    inp.addEventListener('blur',  () => {
+      container.querySelectorAll('.q-box').forEach(b => b.classList.remove('active-box'));
+    });
+
+    updateCursor(qIdx);
   });
-  setTimeout(() => getBoxInput(0,0)?.focus(), 200);
+  setTimeout(() => document.getElementById('q-inp-0')?.focus(), 200);
 }
 
-function getBoxInput(qIdx, ci) {
-  if (ci < 0) return null;
-  return document.querySelector(`#qboxes-${qIdx} .q-box:nth-child(${ci+1}) input`);
+const cursors = [];
+
+function getCharSpan(qIdx, ci) {
+  return document.querySelector(`#qboxes-${qIdx} .q-box:nth-child(${ci+1}) .q-char`);
+}
+
+function updateCursor(qIdx) {
+  const container = document.getElementById(`qboxes-${qIdx}`);
+  if (!container) return;
+  container.querySelectorAll('.q-box').forEach((box, i) => {
+    box.classList.toggle('active-box', i === cursors[qIdx] && !solved[qIdx]);
+  });
 }
 
 function checkAnswer(qIdx) {
   setTimeout(() => {
-    const len = [...ANSWERS[qIdx]].length;
-    let entered = '';
-    for (let i=0; i<len; i++) entered += getBoxInput(qIdx,i)?.value||'';
-    if (entered.length < len) return;
+    const chars = [...ANSWERS[qIdx]];
+    const spans = document.querySelectorAll(`#qboxes-${qIdx} .q-char`);
+    const entered = [...spans].map(s => s.textContent).join('');
+    if (entered.length < chars.length) return;
     if (entered === ANSWERS[qIdx]) solveQuestion(qIdx);
     else shakeQuestion(qIdx);
   }, 60);
@@ -816,8 +849,8 @@ function checkAnswer(qIdx) {
 function solveQuestion(qIdx) {
   solved[qIdx] = true;
   document.getElementById(`qcard-${qIdx}`).classList.add('solved');
-  document.getElementById(`qcard-${qIdx}`).querySelectorAll('input')
-    .forEach(i => i.disabled=true);
+  document.getElementById(`qboxes-${qIdx}`)
+    ?.querySelectorAll('.q-box').forEach(b => b.classList.remove('active-box'));
 
   KEY_MAP.filter(k=>k[0]===qIdx).forEach(([,ci,fi]) => {
     const ch = [...ANSWERS[qIdx]][ci];
@@ -826,7 +859,7 @@ function solveQuestion(qIdx) {
   });
 
   const next = solved.findIndex((s,i) => i>qIdx && !s);
-  if (next>=0) setTimeout(() => getBoxInput(next,0)?.focus(), 350);
+  if (next>=0) setTimeout(() => document.getElementById(`q-inp-${next}`)?.focus(), 350);
 }
 
 function shakeQuestion(qIdx) {
@@ -836,9 +869,10 @@ function shakeQuestion(qIdx) {
   boxes.classList.add('shaking');
   setTimeout(() => {
     boxes.classList.remove('shaking');
-    const len = [...ANSWERS[qIdx]].length;
-    for (let i=0;i<len;i++) { const inp=getBoxInput(qIdx,i); if(inp) inp.value=''; }
-    getBoxInput(qIdx,0)?.focus();
+    boxes.querySelectorAll('.q-char').forEach(s => s.textContent = '');
+    cursors[qIdx] = 0;
+    updateCursor(qIdx);
+    document.getElementById(`q-inp-${qIdx}`)?.focus();
   }, 450);
 }
 
