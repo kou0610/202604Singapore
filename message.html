@@ -101,6 +101,10 @@ canvas {
   font-size:13.5px; font-weight:300; line-height:1.75;
   color:rgba(255,255,255,0.82); margin-bottom:14px;
 }
+.q-hint {
+  font-size:11px; color:rgba(200,169,110,0.65);
+  margin-left:4px; font-style:italic;
+}
 .q-boxes { display:flex; flex-wrap:nowrap; gap:5px; }
 .q-box {
   position:relative;
@@ -754,6 +758,10 @@ function initScene3() {
     const container = document.getElementById(`qboxes-${qIdx}`);
     const card = document.getElementById(`qcard-${qIdx}`);
     const chars = [...answer];
+    const hint = document.createElement('span');
+    hint.className = 'q-hint';
+    hint.textContent = `（ひらがな${chars.length}文字）`;
+    card.querySelector('.q-text').appendChild(hint);
     const keyPos = KEY_MAP
       .filter(k => k[0]===qIdx)
       .reduce((m,[,ci,fi]) => { m[ci]=fi+1; return m; }, {});
