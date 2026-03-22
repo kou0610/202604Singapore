@@ -122,7 +122,14 @@ canvas {
   font-size:18px; font-weight:400;
   color:#fff;
 }
-.q-char.composing { color:rgba(255,255,255,0.35); }
+.q-box.composing-box .q-char { display:none; }
+.q-box.composing-box::after {
+  content:'|';
+  color:#c8a96e;
+  font-size:20px;
+  animation:cursor-blink 0.65s ease-in-out infinite;
+}
+@keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
 .q-box .key-num {
   position:absolute; top:2px; left:3px;
   font-family:'Barlow Condensed',sans-serif;
@@ -791,19 +798,13 @@ function initScene3() {
       if (cursors[qIdx] >= chars.length) checkAnswer(qIdx);
     }
 
-    inp.addEventListener('compositionstart', () => { composing = true; });
-    inp.addEventListener('compositionupdate', e => {
-      const span = getCharSpan(qIdx, cursors[qIdx]);
-      if (!span) return;
-      const ch = e.data ? [...e.data].slice(-1)[0] : '';
-      span.textContent = ch;
-      span.classList.add('composing');
+    inp.addEventListener('compositionstart', () => {
+      composing = true;
+      getCharSpan(qIdx, cursors[qIdx])?.closest('.q-box')?.classList.add('composing-box');
     });
     inp.addEventListener('compositionend', () => {
       composing = false;
-      // 変換中表示をリセット
-      const span = getCharSpan(qIdx, cursors[qIdx]);
-      if (span) { span.textContent = ''; span.classList.remove('composing'); }
+      getCharSpan(qIdx, cursors[qIdx])?.closest('.q-box')?.classList.remove('composing-box');
       const text = inp.value;
       inp.value = '';
       if (text) processChars(text);
