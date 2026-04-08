@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4/10〜12 シンガポール旅行！</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background: #fafafa;
+      color: #333;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(180,180,180,0.08) 0%, transparent 70%);
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #222;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-date {
+      font-size: 1.1rem;
+      color: #888;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-travelers {
+      display: flex;
+      gap: 2rem;
+      margin-top: 0.5rem;
+    }
+
+    .traveler {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .traveler-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .traveler-name {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #555;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: #bbb;
+      animation: fadeInOut 2.5s ease-in-out infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ── Flight Info ── */
+    .flight-bar {
+      background: #222;
+      color: #fff;
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    .flight-bar-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+    }
+
+    .flight-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .flight-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    .flight-route {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+    }
+
+    .flight-detail {
+      font-size: 0.8rem;
+      color: #aaa;
+      font-weight: 300;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ── Day Section ── */
+    .day-section {
+      padding: 5rem 0 3rem;
+    }
+
+    .day-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .day-number {
+      font-size: 4rem;
+      font-weight: 600;
+      color: #ddd;
+      line-height: 1;
+    }
+
+    .day-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .day-date {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .day-weekday {
+      font-size: 0.8rem;
+      color: #999;
+      font-weight: 300;
+    }
+
+    .day-divider {
+      width: 100%;
+      height: 1px;
+      background: #e0e0e0;
+      margin: 1.5rem 0 2rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 3rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      width: 1px;
+      background: #e0e0e0;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 2rem;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -3rem;
+      top: 0.35rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ccc;
+      transform: translateX(-4px);
+    }
+
+    .timeline-dot.highlight {
+      background: #888;
+      box-shadow: 0 0 0 3px rgba(136,136,136,0.15);
+    }
+
+    .timeline-dot.meal {
+      background: #999;
+      box-shadow: 0 0 0 3px rgba(153,153,153,0.12);
+    }
+
+    .timeline-time {
+      font-size: 0.75rem;
+      color: #aaa;
+      letter-spacing: 0.05em;
+      font-weight: 400;
+      margin-bottom: 0.15rem;
+    }
+
+    .timeline-title {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #333;
+    }
+
+    .timeline-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+      font-weight: 400;
+    }
+
+    .tag-meal {
+      background: #f0f0f0;
+      color: #777;
+    }
+
+    .tag-activity {
+      background: #e8e8e8;
+      color: #666;
+    }
+
+    .tag-move {
+      background: transparent;
+      color: #bbb;
+      border: 1px solid #e0e0e0;
+    }
+
+    .tag-hotel {
+      background: #eee;
+      color: #777;
+    }
+
+    .timeline-note {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 0.2rem;
+      font-weight: 300;
+    }
+
+    .free-block {
+      opacity: 0.45;
+    }
+
+    /* ── Reservation ── */
+    .reservation-section {
+      padding: 4rem 0;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .reservation-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 2rem;
+    }
+
+    .reservation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .reservation-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 1.5rem;
+    }
+
+    .reservation-card-date {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+
+    .reservation-card-name {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 0.3rem;
+    }
+
+    .reservation-card-time {
+      font-size: 0.8rem;
+      color: #999;
+      font-weight: 300;
+    }
+
+    .reservation-status {
+      display: inline-block;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      margin-top: 0.5rem;
+    }
+
+    .status-confirmed {
+      background: #e8f5e9;
+      color: #66bb6a;
+    }
+
+    .status-not-required {
+      background: #f5f5f5;
+      color: #aaa;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 4rem 0;
+      color: #ccc;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-label">Travel Itinerary</div>
+    <h1>シンガポール旅行！</h1>
+    <div class="hero-date">2026.4.10 fri — 4.12 sun</div>
+    <div class="hero-travelers">
+      <div class="traveler">
+        <div class="traveler-icon">H</div>
+        <div class="traveler-name">弘</div>
+      </div>
+      <div class="traveler">
+        <div class="traveler-icon">R</div>
+        <div class="traveler-name">凜</div>
+      </div>
+    </div>
+    <div class="scroll-hint">SCROLL</div>
+  </section>
+
+  <!-- Flight -->
+  <div class="flight-bar">
+    <div class="flight-bar-inner">
+      <div class="flight-item">
+        <div class="flight-label">Outbound</div>
+        <div class="flight-route">HND → SIN</div>
+        <div class="flight-detail">JL35 ／ 4.10 00:05 → 06:10</div>
+      </div>
+      <div class="flight-item">
+        <div class="flight-label">Return</div>
+        <div class="flight-route">SIN → HND</div>
+        <div class="flight-detail">JL38 ／ 4.13 01:55 → 09:50</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- DAY 1 -->
+    <section class="day-section">
+      <div class="day-header">
+        <div class="day-number">01</div>
+        <div class="day-info">
+          <div class="day-date">4月10日</div>
+          <div class="day-weekday">Friday</div>
+        </div>
+      </div>
+      <div class="day-divider"></div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">06:10</div>
+          <div class="timeline-title">チャンギ国際空港 着</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">06:40</div>
+          <div class="timeline-title">タクシーでリッツカールトンへ <span class="timeline-tag tag-move">移動</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">07:30 — 08:30</div>
+          <div class="timeline-title">喜園珈琲店 <span class="timeline-tag tag-meal">朝食</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">08:30 — 10:00</div>
+          <div class="timeline-title">リトルインディア散策 <span class="timeline-tag tag-activity">観光</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">10:00 — 11:30</div>
+          <div class="timeline-title">アラブストリート散策 <span class="timeline-tag tag-activity">観光</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">12:00 — 13:30</div>
+          <div class="timeline-title">レイガーデン <span class="timeline-tag tag-meal">昼食</span></div>
+        </div>
+        <div class="timeline-item free-block">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">13:30 — 15:00</div>
+          <div class="timeline-title">フリータイム</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">15:00</div>
+          <div class="timeline-title">リッツカールトン チェックイン <span class="timeline-tag tag-hotel">宿泊</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">15:00 — 16:30</div>
+          <div class="timeline-title">ホテルでゆっくり</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">16:30 — 18:30</div>
+          <div class="timeline-title">アートサイエンスミュージアム <span class="timeline-tag tag-activity">観光</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">18:30 — 19:00</div>
+          <div class="timeline-title">MBS チキンライス <span class="timeline-tag tag-meal">夕食</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">19:45 — 20:00</div>
+          <div class="timeline-title">Garden Rhapsody — Retro Fever <span class="timeline-tag tag-activity">ショー</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">20:00 — 22:00</div>
+          <div class="timeline-title">MBS カジノ <span class="timeline-tag tag-activity">エンタメ</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAY 2 -->
+    <section class="day-section">
+      <div class="day-header">
+        <div class="day-number">02</div>
+        <div class="day-info">
+          <div class="day-date">4月11日</div>
+          <div class="day-weekday">Saturday</div>
+        </div>
+      </div>
+      <div class="day-divider"></div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">09:00 — 10:00</div>
+          <div class="timeline-title">ナシレマ <span class="timeline-tag tag-meal">朝食</span></div>
+        </div>
+        <div class="timeline-item free-block">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">10:00 — 12:30</div>
+          <div class="timeline-title">フリータイム</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">12:30 — 14:00</div>
+          <div class="timeline-title">バクテー <span class="timeline-tag tag-meal">昼食</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">14:00 — 14:30</div>
+          <div class="timeline-title">セントーサへ移動 <span class="timeline-tag tag-move">移動</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">14:30 — 18:00</div>
+          <div class="timeline-title">セントーサ島 <span class="timeline-tag tag-activity">観光</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">18:00 — 18:30</div>
+          <div class="timeline-title">スプリングコートへ移動 <span class="timeline-tag tag-move">移動</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">18:30 — 21:30</div>
+          <div class="timeline-title">スプリングコート <span class="timeline-tag tag-meal">夕食</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAY 3 -->
+    <section class="day-section">
+      <div class="day-header">
+        <div class="day-number">03</div>
+        <div class="day-info">
+          <div class="day-date">4月12日</div>
+          <div class="day-weekday">Sunday</div>
+        </div>
+      </div>
+      <div class="day-divider"></div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">09:00 — 10:00</div>
+          <div class="timeline-title">ポリッジ <span class="timeline-tag tag-meal">朝食</span></div>
+        </div>
+        <div class="timeline-item free-block">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">10:00 — 12:30</div>
+          <div class="timeline-title">フリータイム</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">12:30 — 14:00</div>
+          <div class="timeline-title">リモンチェッロ <span class="timeline-tag tag-meal">昼食</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">14:20 — 18:30</div>
+          <div class="timeline-title">オーチャード 買い物・カフェ <span class="timeline-tag tag-activity">ショッピング</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">18:30 — 19:00</div>
+          <div class="timeline-title">Red Houseへ移動 <span class="timeline-tag tag-move">移動</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot meal"></div>
+          <div class="timeline-time">19:00 — 21:30</div>
+          <div class="timeline-title">Red House Seafood <span class="timeline-tag tag-meal">夕食</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot highlight"></div>
+          <div class="timeline-time">22:00 — 23:30</div>
+          <div class="timeline-title">Long Bar <span class="timeline-tag tag-activity">バー</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">23:30</div>
+          <div class="timeline-title">タクシーでチャンギ空港へ <span class="timeline-tag tag-move">移動</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reservations -->
+    <section class="reservation-section">
+      <div class="reservation-title">Reservations</div>
+      <div class="reservation-grid">
+        <div class="reservation-card">
+          <div class="reservation-card-date">4/10 fri — lunch</div>
+          <div class="reservation-card-name">レイガーデン</div>
+          <div class="reservation-card-time">12:00〜13:30</div>
+          <div class="reservation-status status-not-required">要予約</div>
+        </div>
+        <div class="reservation-card">
+          <div class="reservation-card-date">4/11 sat — dinner</div>
+          <div class="reservation-card-name">スプリングコート</div>
+          <div class="reservation-card-time">18:30〜21:30</div>
+          <div class="reservation-status status-confirmed">予約済</div>
+        </div>
+        <div class="reservation-card">
+          <div class="reservation-card-date">4/12 sun — lunch</div>
+          <div class="reservation-card-name">リモンチェッロ</div>
+          <div class="reservation-card-time">12:30〜14:00</div>
+          <div class="reservation-status status-confirmed">予約済</div>
+        </div>
+        <div class="reservation-card">
+          <div class="reservation-card-date">4/12 sun — dinner</div>
+          <div class="reservation-card-name">Red House Seafood</div>
+          <div class="reservation-card-time">19:00〜21:30</div>
+          <div class="reservation-status status-confirmed">予約済</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    SINGAPORE 2026 — 弘 & 凜
+  </div>
+
+</body>
+</html>
